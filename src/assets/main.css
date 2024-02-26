@@ -1,42 +1,7 @@
-/* @font-face {
-	font-family: 'Gotham Rounded';
-	font-style: normal;
-	font-weight: normal;
-	src: url('../fonts/GothamRounded/GothamRnd-Medium.otf');
-}
-@font-face {
-	font-family: 'Gotham Rounded';
-	font-style: normal;
-	font-weight: bold;
-	src: url('../fonts/GothamRounded/GothamRnd-Bold.otf');
-}
-@font-face {
-	font-family: 'Gotham Rounded';
-	font-style: italic;
-	font-weight: normal;
-	src: url('../fonts/GothamRounded/GothamRnd-MedIta.otf');
-}
-@font-face {
-	font-family: 'Gotham Rounded';
-	font-style: italic;
-	font-weight: bold;
-	src: url('../fonts/GothamRounded/GothamRnd-BoldIta.otf');
-}
-@font-face {
-	font-family: 'Gotham Rounded';
-	font-style: normal;
-	font-weight: lighter;
-	src: url('../fonts/GothamRounded/GothamRnd-Light.otf');
-}
-@font-face {
-	font-family: 'Gotham Rounded';
-	font-style: italic;
-	font-weight: lighter;
-	src: url('../fonts/GothamRounded/GothamRnd-LightIta.otf');
-}
 * {
-	font-family: 'Gotham Rounded';
-} */
+	font-family: 'Rubik', sans-serif;
+	font-weight: 400;
+}
 
 html body div div.grecaptcha-badge {
 	display: none !important;
