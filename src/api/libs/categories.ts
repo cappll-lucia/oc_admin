@@ -5,7 +5,6 @@ const getAll = async () => {
 		const resp = await http.get('/categories');
 		return resp.data.data;
 	} catch (error) {
-		console.log(error);
 		throw error;
 	}
 };

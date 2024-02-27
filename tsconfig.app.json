@@ -1,6 +1,16 @@
 {
 	"extends": "@vue/tsconfig/tsconfig.dom.json",
-	"include": ["env.d.ts", "src/**/*", "src/**/*.ts", "src/api/libs/*.ts", "src/**/*.vue", "src/vite-env.d.ts"],
+	"include": [
+		"env.d.ts",
+		"src/**/*",
+		"src/**/*.ts",
+		"src/api/libs/*.ts",
+		"src/stores/*.ts",
+		"src/utils/*.ts",
+		"src/**/*.vue",
+		"src/vite-env.d.ts"
+	],
+	"files": ["src/stores/UsersStore.ts", "src/utils/validator.ts"],
 	"exclude": ["src/**/__tests__/*"],
 	"compilerOptions": {
 		"composite": true,
