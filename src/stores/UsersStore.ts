@@ -2,10 +2,11 @@ import { http } from '@/api/http.js';
 import token from '@/api/token.js';
 import { defineStore } from 'pinia';
 import { jwtDecode } from 'jwt-decode';
+import { type JwtUser } from '@/api/entities.js';
 
 export const useUserStore = defineStore('UserStore', {
 	state: () => ({
-		user: {},
+		user: {} as JwtUser,
 	}),
 
 	actions: {
@@ -13,7 +14,7 @@ export const useUserStore = defineStore('UserStore', {
 			try {
 				const res = await http.post('/users/login', { email, password });
 				token.set(res.data.token);
-        this.user = jwtDecode(res.data.token);
+				this.user = jwtDecode(res.data.token);
 			} catch (error: any) {
 				throw new Error(error.response.data.message);
 			}
@@ -25,8 +26,16 @@ export const useUserStore = defineStore('UserStore', {
 		},
 	},
 
-getters: {
-  isSignedIn: () => token.get(),
-  getMe(): any { return this.user; }
-},
+	getters: {
+		isSignedIn: () => token.get(),
+		// getMe: () => token.get() ? jwtDecode(token.get()!) : null,
+		getMe: () => {
+			const decodedToken = token.get();
+			if (decodedToken) {
+				return jwtDecode(decodedToken) as JwtUser; // Explicitly cast to JwtUser
+			} else {
+				return null;
+			}
+		},
+	},
 });

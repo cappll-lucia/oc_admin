@@ -69,7 +69,10 @@ const handleLogin = async () => {
 					</div>
 				</v-card-text>
 				<v-card-actions class="form-action-panel">
-					<v-btn type="submit" class="submit-btn" width="100">INGRESAR</v-btn>
+					<v-btn type="submit" class="submit-btn">
+						<v-icon icon="mdi-logout" class="menu-item-icon mr-1"></v-icon>
+						INGRESAR</v-btn
+					>
 				</v-card-actions>
 			</v-form>
 		</v-card>
@@ -97,6 +100,7 @@ const handleLogin = async () => {
 }
 .form-sheet .form-card-login .form-card-header {
 	font-size: 1.5rem;
+	margin-bottom: 1rem;
 }
 .form-sheet .form-card .form-input-panel {
 	margin: 1rem 0 0 0;
@@ -138,6 +142,9 @@ const handleLogin = async () => {
 	margin-top: 0;
 	.v-btn {
 		width: 100% !important;
+		.v-btn__content {
+			font-size: 0.9rem;
+		}
 	}
 }
 

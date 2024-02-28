@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import router from '../router';
 import { ref, computed } from 'vue';
+import { useUserStore } from '@/stores/UsersStore.js';
+import { type JwtUser } from '@/api/entities.js';
+
+const userStore = useUserStore();
+
+const currentUser = computed(() => userStore.getMe);
 
 const showMenu = ref(false);
 const showUsrMenu = ref(false);
@@ -16,7 +22,7 @@ const MenuItems = [
 </script>
 
 <template>
-	<div class="menu-section">
+	<div class="menu-section" v-if="userStore.isSignedIn">
 		<template class="menu d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex">
 			<v-tabs>
 				<v-tab v-for="(item, $index) in MenuItems" :key="$index" class="menu-item-label" :to="item.routerPath">
@@ -25,10 +31,16 @@ const MenuItems = [
 				</v-tab>
 			</v-tabs>
 			<v-spacer />
-			<span class="user-data-tag pointer" @click="showUsrMenu = !showUsrMenu">NOMBRE USR</span>
+			<v-icon icon="mdi-account-circle-outline" class="menu-item-icon mr-3"></v-icon>
+			<span class="user-data-tag pointer" v-if="currentUser" @click="showUsrMenu = !showUsrMenu">{{
+				`${currentUser?.firstName ? currentUser.firstName : ''} ${currentUser?.lastName ?? ''}`
+			}}</span>
 		</template>
 		<div class="menuUsr" v-if="showUsrMenu">
-			<span class="pointer"> Cerrar Sesión</span>
+			<span class="pointer" @click="userStore.signOut()">
+				<v-icon icon="mdi-logout" class="menu-item-icon mr-1"></v-icon>
+				Cerrar Sesión</span
+			>
 		</div>
 	</div>
 </template>
@@ -65,7 +77,7 @@ const MenuItems = [
 	height: min-content;
 	background-color: none;
 	z-index: 0;
-	width: 150px;
+	width: 193px;
 	background-color: #022c66;
 	display: block;
 	span {

@@ -7,7 +7,7 @@ import Menu from './Menu.vue';
 		<span class="header-title">ADMINISTRACIÓN</span>
 		<img src="../assets/logo.gif" class="header-logo" alt="OPTICA CRIADO" />
 	</v-app-bar>
-	<!-- <Menu /> -->
+	<Menu />
 </template>
 
 <style lang="scss">
