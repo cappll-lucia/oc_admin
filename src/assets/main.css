@@ -189,20 +189,44 @@ div.orders div.v-alert.alert div p a {
 	text-decoration: underline;
 }
 
-.pageView {
+.page-layout {
+	width: 100%;
+	margin-top: 5rem;
+	display: flex;
+	justify-content: center;
+}
+
+.page-view {
 	position: relative;
 	top: 0;
 	right: 0;
 	width: 80%;
 }
-.pageView .header {
+.page-view .header {
 	width: 100%;
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-start;
 	align-items: center;
-	color: #163d8c;
-	margin-bottom: 25px;
+	color: #022c66;
+	margin-bottom: 20px;
+}
+.page {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.v-container {
+	max-width: 95% !important;
+}
+
+.header .v-toolbar-title__placeholder {
+	font-size: 2rem;
+	width: min-content;
+	font-weight: 600;
 }
 
 .col-no-gow {
@@ -217,11 +241,12 @@ div.orders div.v-alert.alert div p a {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	color: #112288;
+	color: #163d8c;
 }
 
 .loader span {
-	padding-top: 2rem;
+	padding-top: 1rem;
+	font-size: large;
 }
 
 .alert-body {
