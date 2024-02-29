@@ -73,7 +73,7 @@ const confirmDelete = () => {
 		<v-dialog v-model="showDeleteDialog" max-width="290">
 			<NotificationConfirmation
 				:title="'Eliminar Categoría'"
-				:question="`¿Está seguro de eliminar la categoría FOTOGRAFÍA?`"
+				:question="`¿Está seguro de eliminar la categoría ${(editedCategory as Category).name.toLocaleUpperCase()}?`"
 				@cancel="() => (showDeleteDialog = false)"
 				@confirm="confirmDelete"
 			/>

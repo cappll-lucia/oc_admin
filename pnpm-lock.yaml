@@ -23,6 +23,9 @@ dependencies:
   vue:
     specifier: ^3.4.15
     version: 3.4.19(typescript@5.3.3)
+  vue-gpickr:
+    specifier: ^1.0.0
+    version: 1.0.0(typescript@5.3.3)
   vue-router:
     specifier: ^4.2.5
     version: 4.3.0(vue@3.4.19)
@@ -125,6 +128,22 @@ packages:
       '@babel/helper-string-parser': 7.23.4
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
+
+  /@ckpack/vue-color@1.5.0(vue@3.4.19):
+    resolution: {integrity: sha512-dj1zXVyay2m4LdlLJCQSdIS2FYwUl77BZqyKmUXiehyqjCP0bGYnPcL38lrShzYUc2FdkYQX8ANZZjRahd4PQw==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@ctrl/tinycolor': 3.6.1
+      material-colors: 1.2.6
+      vue: 3.4.19(typescript@5.3.3)
+    dev: false
+
+  /@ctrl/tinycolor@3.6.1:
+    resolution: {integrity: sha512-SITSV6aIXsuVNV3f3O0f2n/cgyEDWoSqtZMYiAmcsYHydcKrOz3gUxB/iXd/Qf08+IZX4KpgNbvUdMBmWz+kcA==}
+    engines: {node: '>=10'}
+    dev: false
 
   /@esbuild/aix-ppc64@0.19.12:
     resolution: {integrity: sha512-bmoCYyWdEL3wDQIVbcyzRyeKLgk2WtWLTWz1ZIAZF/EGbNOwSA6ew3PftJ1PqMiOOGu0OyFMzG53L0zqIpPeNA==}
@@ -1520,6 +1539,10 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /material-colors@1.2.6:
+    resolution: {integrity: sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==}
+    dev: false
+
   /material-design-icons-iconfont@6.7.0:
     resolution: {integrity: sha512-lSj71DgVv20kO0kGbs42icDzbRot61gEDBLQACzkUuznRQBUYmbxzEkGU6dNBb5fRWHMaScYlAXX96HQ4/cJWA==}
     dev: true
@@ -2323,6 +2346,10 @@ packages:
       yallist: 4.0.0
     dev: true
 
+  /tinycolor2@1.6.0:
+    resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
+    dev: false
+
   /to-fast-properties@2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
@@ -2454,6 +2481,16 @@ packages:
         optional: true
     dependencies:
       vue: 3.4.19(typescript@5.3.3)
+    dev: false
+
+  /vue-gpickr@1.0.0(typescript@5.3.3):
+    resolution: {integrity: sha512-po7gfVqlPgvKXyA0kD6lvQuXerSKkuzCW+wq9tA3V9L/m/txCvoGLQ98y4XR7sKV9lB/AkCwH8EsKwOxQ9z0vA==}
+    dependencies:
+      '@ckpack/vue-color': 1.5.0(vue@3.4.19)
+      tinycolor2: 1.6.0
+      vue: 3.4.19(typescript@5.3.3)
+    transitivePeerDependencies:
+      - typescript
     dev: false
 
   /vue-router@4.3.0(vue@3.4.19):

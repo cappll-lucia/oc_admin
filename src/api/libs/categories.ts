@@ -23,7 +23,9 @@ const update = async (_categ: Category) => {
 	try {
 		const resp = await http.put(`categories/${_categ.id}`, _categ);
 		return resp.data;
-	} catch (error: any) {}
+	} catch (error: any) {
+		throw error.response.data;
+	}
 };
 
 const remove = async (_id: number) => {

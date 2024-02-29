@@ -16,7 +16,7 @@ const showNewDialog = ref(false);
 const showSuccessDialog = ref(false);
 const showErrorDialog = ref(false);
 
-const newCategory = ref<{ name: string; description: string | null }>({
+const newCategory = ref<{ name: string, description: string | null }>({
 	name: '',
 	description: null,
 });
@@ -48,7 +48,6 @@ const handleAddNewCategory = async () => {
 			await getCategories();
 		}
 	} catch (error: any) {
-		console.log(error);
 		result.value.title = 'Error al crear categoría';
 		result.value.message = error.message;
 		showErrorDialog.value = true;
@@ -62,7 +61,6 @@ const handleEditCategory = async (categ: Category) => {
 		showSuccessDialog.value = true;
 		await getCategories();
 	} catch (error: any) {
-		console.log(error);
 		result.value.title = 'Error al actualizar categoría';
 		result.value.message = error.message;
 		showErrorDialog.value = true;
