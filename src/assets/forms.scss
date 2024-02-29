@@ -6,65 +6,71 @@
 	width: 100%;
 	height: 100%;
 	margin: 5rem 0 2rem 0;
-
-	.form-card {
-		height: max-content;
-		width: 25rem;
-		padding: 2rem;
+}
+.form-card,
+.card {
+	height: max-content;
+	width: 25rem;
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	.form-card-header {
+		font-size: 1.5rem;
+		line-height: 1.1;
+		color: #163d8c;
+	}
+	.form-input-panel {
+		margin: 2rem 0 0 0;
+		width: 75%;
 		display: flex;
-		flex-direction: column;
 		justify-content: center;
-		align-items: center;
-		.form-card-header {
-			font-size: 1.2rem;
-			line-height: 1.1;
-			color: #163d8c;
-		}
-		.form-input-panel {
-			margin: 2rem 0 0 0;
-			width: 75%;
-			display: flex;
-			justify-content: center;
-			align-items: flex-starcet;
-			flex-direction: column;
-			height: min-content;
+		align-items: flex-starcet;
+		flex-direction: column;
+		height: min-content;
 
-			.text-field-group {
-				width: 100%;
-				margin: 0 0 0.5rem 0;
-				padding: 0;
-
-				.v-field-label {
-					font-size: 14px;
-					padding-left: 10px;
-					margin: 0;
-				}
-
-				.v-field__input {
-					width: 100%;
-					height: 10px;
-					font-size: 14px;
-					padding: 10px 0 0 21px;
-				}
+		.text-field-group {
+			width: 100%;
+			margin: 0 0 0.5rem 0;
+			padding: 0;
+			.v-text-field {
+				margin-bottom: 1rem;
+			}
+			.v-field-label {
+				font-size: 14px;
+				padding-left: 10px;
+				margin: 0;
 			}
 
-			.form-action-panel {
-				display: flex;
+			.v-field__input {
 				width: 100%;
-				padding: 0;
-				justify-content: space-between;
-				align-items: center;
-				flex-direction: row;
-				flex-wrap: nowrap;
+				height: 10px;
 				font-size: 14px;
-				.v-btn__content {
-					font-size: 10px;
-					font-weight: 500;
-				}
+				padding: 0 0 0 21px;
+			}
+		}
+
+		.form-action-panel {
+			display: flex;
+			width: 100%;
+			padding: 0;
+			justify-content: space-between;
+			align-items: center;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			font-size: 14px;
+			.v-btn__content {
+				font-size: 14px;
+			}
+			.cancel-btn,
+			.submit-btn {
+				width: 48%;
 			}
 		}
 	}
 }
+
 .submit-btn {
 	background-color: #022c66;
 	color: #fff;
@@ -90,8 +96,7 @@
 	flex-wrap: nowrap;
 	font-size: 14px;
 	.v-btn__content {
-		font-size: 10px;
-		font-weight: 500;
+		font-size: 12px;
 	}
 }
 
@@ -100,9 +105,9 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	font-size: 1.2rem;
+	font-size: 2rem;
 	line-height: 1.1;
-	color: #163d8c;
+	color: #022c66;
 }
 
 .v-messages__message {

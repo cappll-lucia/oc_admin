@@ -25,16 +25,28 @@ const MenuItems = [
 	<div class="menu-section" v-if="userStore.isSignedIn">
 		<template class="menu d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex">
 			<v-tabs>
-				<v-tab v-for="(item, $index) in MenuItems" :key="$index" class="menu-item-label" :to="item.routerPath">
+				<v-tab
+					v-for="(item, $index) in MenuItems"
+					:key="$index"
+					class="menu-item-label"
+					:to="item.routerPath"
+				>
 					<v-icon :icon="item.icon" class="menu-item-icon"></v-icon>
 					{{ item.label }}
 				</v-tab>
 			</v-tabs>
 			<v-spacer />
 			<v-icon icon="mdi-account-circle-outline" class="menu-item-icon mr-3"></v-icon>
-			<span class="user-data-tag pointer" v-if="currentUser" @click="showUsrMenu = !showUsrMenu">{{
-				`${currentUser?.firstName ? currentUser.firstName : ''} ${currentUser?.lastName ?? ''}`
-			}}</span>
+			<span
+				class="user-data-tag pointer"
+				v-if="currentUser"
+				@click="showUsrMenu = !showUsrMenu"
+				>{{
+					`${currentUser?.firstName ? currentUser.firstName : ''} ${
+						currentUser?.lastName ?? ''
+					}`
+				}}</span
+			>
 		</template>
 		<div class="menuUsr" v-if="showUsrMenu">
 			<span class="pointer" @click="userStore.signOut()">
@@ -53,12 +65,13 @@ const MenuItems = [
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	box-shadow: 0 3px 3px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
+	box-shadow: 0 3px 3px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+		0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
 	color: #deefe7;
 	background-color: #022c66;
 	height: 48px;
 	padding-top: 5px;
-	z-index: 100;
+	z-index: 1100;
 	.menu-item-icon {
 		margin-right: 5px;
 	}
@@ -76,14 +89,15 @@ const MenuItems = [
 	right: 0;
 	height: min-content;
 	background-color: none;
-	z-index: 0;
+	z-index: 1000;
 	width: 193px;
 	background-color: #022c66;
 	display: block;
 	span {
 		display: block;
 		padding: 10px 10px 10px 15px;
-		box-shadow: 0 3px 3px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
+		box-shadow: 0 3px 3px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+			0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
 		width: 100%;
 		color: #deefe7;
 	}

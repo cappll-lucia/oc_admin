@@ -125,7 +125,12 @@ div.sucursal.panel {
 }
 
 .menu-admin nav div.v-toolbar__content,
-.menu-admin nav div.v-toolbar__content div.v-menu.v-menu--inline div.v-menu__activator div.v-toolbar__items {
+.menu-admin
+	nav
+	div.v-toolbar__content
+	div.v-menu.v-menu--inline
+	div.v-menu__activator
+	div.v-toolbar__items {
 	height: 100%;
 }
 
@@ -137,7 +142,13 @@ div.sucursal.panel {
 	align-items: center;
 }
 
-.menu-admin nav div.v-toolbar__content div.v-menu.v-menu--inline div.v-menu__activator div.v-toolbar__items i {
+.menu-admin
+	nav
+	div.v-toolbar__content
+	div.v-menu.v-menu--inline
+	div.v-menu__activator
+	div.v-toolbar__items
+	i {
 	font-size: 19px;
 }
 
@@ -179,8 +190,14 @@ div.orders div.v-alert.alert div p a {
 	color: #fff !important;
 }
 
-.custom-red .v-input--selection-controls__input input:not(:checked) ~ div,
-.custom-red.v-input--is-disabled .v-input--selection-controls__input input:not(:checked)[aria-disabled='true'] ~ div {
+.custom-red
+	.v-input--selection-controls__input
+	input:not(:checked)
+	~ div,
+.custom-red.v-input--is-disabled
+	.v-input--selection-controls__input
+	input:not(:checked)[aria-disabled='true']
+	~ div {
 	color: red !important;
 }
 
@@ -229,6 +246,16 @@ div.orders div.v-alert.alert div p a {
 	font-weight: 600;
 }
 
+.header .v-btn {
+	background-color: #118c46;
+	color: #deefe7;
+}
+
+.header .v-btn:hover {
+	background-color: #0a4923;
+	color: #b2f3d3;
+}
+
 .col-no-gow {
 	flex-grow: 0;
 	margin-right: 15px;
@@ -268,15 +295,15 @@ div.orders div.v-alert.alert div p a {
 	padding-right: 20px;
 }
 
-.newDialog {
+.new-dialog {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 100%;
 }
-.newDialog .card {
+.new-dialog .card {
 	padding: 2rem 1rem;
 	width: 25rem;
+	color: #022c66;
 }
 
 .v-dialog .v-overlay__content {

@@ -4,7 +4,7 @@
 	height: -moz-max-content;
 	height: max-content;
 	padding: 0;
-	margin: 0;
+	margin: 0 0 3rem 0;
 }
 
 .v-data-table-footer__items-per-page {
@@ -39,6 +39,7 @@
 #tr:hover {
 	background-color: aquav !important;
 }
+
 
 .v-data-table-header__content span {
 	font-size: 20px;
