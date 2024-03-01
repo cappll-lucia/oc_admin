@@ -3,7 +3,7 @@ import Menu from './Menu.vue';
 </script>
 
 <template>
-	<v-app-bar>
+	<v-app-bar style="z-index: 2000">
 		<span class="header-title">ADMINISTRACIÓN</span>
 		<img src="../assets/logo.gif" class="header-logo" alt="OPTICA CRIADO" />
 	</v-app-bar>
@@ -11,9 +11,6 @@ import Menu from './Menu.vue';
 </template>
 
 <style lang="scss">
-.v-toolbar {
-	z-index: 2000;
-}
 .header-title {
 	color: #022c66;
 }
@@ -22,7 +19,6 @@ import Menu from './Menu.vue';
 	justify-content: space-between;
 	align-items: center;
 	box-shadow: 0 5px 5px -1px rgba(0, 0, 0, 0.2) !important;
-
 	padding: 2px 20px;
 	position: relative;
 	margin-bottom: 1px;

@@ -22,3 +22,13 @@ const emits = defineEmits(['confirm', 'cancel']);
 		</v-form>
 	</v-card>
 </template>
+
+<style lang="scss">
+.form-action-panel {
+	display: flex;
+	justify-content: space-between;
+	.v-btn {
+		width: 48%;
+	}
+}
+</style>
