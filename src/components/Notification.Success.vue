@@ -7,7 +7,7 @@ const emit = defineEmits(['close']);
 <template>
 	<v-card class="form-card p-2" width="26rem">
 		<v-card-text class="d-flex flex-column">
-			<div class="form-card-header" v-if="props.result.title">
+			<div class="form-card-header-notif" v-if="props.result.title">
 				<span>{{ props.result.title }}</span>
 			</div>
 			<span class="alert-body mt-2 mb-2">{{ props.result.message }}</span>
@@ -32,7 +32,7 @@ const emit = defineEmits(['close']);
 <style lang="scss">
 @import '../assets/main.css';
 @import '../assets/forms.scss';
-.form-card-header {
+.form-card-header-notif {
 	font-size: 1.3rem !important;
 }
 </style>

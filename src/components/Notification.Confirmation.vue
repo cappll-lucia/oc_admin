@@ -6,7 +6,7 @@ const emits = defineEmits(['confirm', 'cancel']);
 
 <template>
 	<v-card class="confirm-card" width="23rem">
-		<div class="form-card-header">
+		<div class="form-card-header-notif">
 			<span>{{ props.title }}</span>
 		</div>
 		<v-form class="form-intup-panel mt-4" @submit.prevent="emits('confirm')">
@@ -30,5 +30,8 @@ const emits = defineEmits(['confirm', 'cancel']);
 	.v-btn {
 		width: 48%;
 	}
+}
+.form-card-header-notif {
+	color: #022c66;
 }
 </style>
