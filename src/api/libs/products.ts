@@ -10,6 +10,14 @@ const getAll = async () => {
 		throw error;
 	}
 };
+const getProducMetadata = async (_prodId: number) => {
+	try {
+		const resp = await http.get(`products/data/${_prodId}`);
+		return resp.data.data;
+	} catch (error: any) {
+		throw error.response.data;
+	}
+};
 
 const add = async (_product: {
 	name: string;
@@ -46,6 +54,17 @@ const update = async (
 	}
 };
 
+const updateStock = async (_prodId: number, _colorId: number, stock: number) => {
+	try {
+		const resp = await http.put(`products/update-stock/${_prodId}/${_colorId}`, {
+			stock,
+		});
+		return resp.data;
+	} catch (error: any) {
+		throw error.response.data;
+	}
+};
+
 const remove = async (_id: number) => {
 	try {
 		await http.delete(`/products/${_id}`);
@@ -58,6 +77,7 @@ const remove = async (_id: number) => {
 
 export const productsApi = {
 	getAll: () => getAll(),
+	getProducMetadata: (_prodId: number) => getProducMetadata(_prodId),
 	add: (_product: {
 		name: string;
 		description: string | null;
@@ -77,5 +97,7 @@ export const productsApi = {
 		},
 		_id: number
 	) => update(_product, _id),
+	updateStock: (_prodId: number, _colorId: number, _stock: number) =>
+		updateStock(_prodId, _colorId, _stock),
 	remove: (_id: number) => remove(_id),
 };

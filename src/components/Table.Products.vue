@@ -4,7 +4,9 @@ import { type DataTableHeader } from '../utils/types.js';
 import type { Product, Color } from '../api/entities.js';
 import formRules from 'form-rules';
 import NotificationConfirmation from './Notification.Confirmation.vue';
+import NotificationSuccess from './Notification.Success.vue';
 import { validator } from '@/utils/validator.js';
+import { productsApi } from '@/api/libs/products.js';
 const props = defineProps(['products', 'categories', 'brands', 'colors']);
 const emits = defineEmits(['handleDelete', 'handleEdit']);
 
@@ -21,6 +23,13 @@ const initSort = [{ key: 'name', order: 'asc' }];
 
 const showEditDialog = ref(false);
 const showDeleteDialog = ref(false);
+const showManageProductDialog = ref(false);
+const showUpdatedMetadataDialog = ref(false);
+
+const result = ref({
+	message: '',
+	title: '',
+});
 
 const editedProduct = ref<{
 	name: string;
@@ -28,8 +37,10 @@ const editedProduct = ref<{
 	price: any;
 	category: any;
 	brand: any;
-	colors: any;
-}>({ name: '', description: null, price: 0, category: 0, brand: 0, colors: [] });
+	colors: any[];
+}>({ name: 'fsdfs', description: null, price: 0, category: 0, brand: 0, colors: [] });
+
+const editedProductData = ref<any[]>([]);
 
 const clearEditedProduct = () => {
 	editedProduct.value = {
@@ -47,6 +58,13 @@ const edit = (prod: any) => {
 	editedProduct.value.brand = prod.brand.id;
 	showEditDialog.value = true;
 };
+
+const manage = async (prod: any) => {
+	editedProduct.value = { ...prod };
+	editedProductData.value = await productsApi.getProducMetadata(prod.id);
+	showManageProductDialog.value = true;
+};
+
 const del = (prod: any) => {
 	editedProduct.value = prod;
 	showDeleteDialog.value = true;
@@ -83,6 +101,37 @@ const confirmEdition = () => {
 const saveColorsID = (selectedColors: Color[]) => {
 	(editedProduct as any).colors = selectedColors.map((col) => col.id);
 };
+const getImageUrl = (imageName: string) =>
+	`${import.meta.env.VITE_API_URL}/products/image/${imageName}`;
+
+const updateStock = (dataRow: {
+	product: number;
+	color: number;
+	images_url: string[];
+	name: string;
+	background: string;
+}) => {
+	console.log(editedProductData.value);
+};
+
+const handleUpdateStock = async (dataRow: {
+	product: number;
+	color: number;
+	stock: number;
+	images_url: string[];
+	name: string;
+	background: string;
+}) => {
+	try {
+		await productsApi.updateStock(dataRow.product, dataRow.color, dataRow.stock);
+		result.value.title = 'Stock Actualizado';
+		showUpdatedMetadataDialog.value = true;
+	} catch (error: any) {
+		result.value.title = 'Error al actualizar el stock del producto';
+		result.value.message = error.response.data.message;
+		showUpdatedMetadataDialog.value = true;
+	}
+};
 </script>
 
 <template>
@@ -107,7 +156,7 @@ const saveColorsID = (selectedColors: Color[]) => {
 					size="small"
 					icon="mdi-application-cog"
 					class="mr-4 pointer"
-					@click="console.log('manage')"
+					@click="manage(item)"
 				></v-icon>
 				<v-icon
 					size="small"
@@ -207,14 +256,176 @@ const saveColorsID = (selectedColors: Color[]) => {
 				</v-form>
 			</v-card>
 		</v-dialog>
+		<v-dialog v-model="showManageProductDialog">
+			<v-card class="card-manage-prod">
+				<div class="header">
+					<span>Gestionar Producto</span>
+					<h1>{{ editedProduct.name }}</h1>
+				</div>
+				<div v-for="dataRow in editedProductData" class="prod-color-row">
+					<div class="color-title">
+						<span>{{ dataRow.name }}</span>
+					</div>
+					<div class="management-section">
+						<v-form
+							class="product-color-stock"
+							@submit.prevent="handleUpdateStock(dataRow)"
+						>
+							<div>
+								<v-text-field v-model="dataRow.stock" variant="outlined"></v-text-field>
+								<div class="arrows">
+									<v-btn variant="outlined">
+										<v-icon icon="mdi-chevron-up" @click="() => dataRow.stock++"></v-icon
+									></v-btn>
+									<v-btn variant="outlined">
+										<v-icon
+											icon="mdi-chevron-down"
+											@click="() => dataRow.stock--"
+										></v-icon
+									></v-btn>
+								</div>
+							</div>
+							<v-btn type="submit">ACTUALIZAR STOCK</v-btn>
+						</v-form>
+					</div>
+					<div class="product-color-gallery">
+						<div class="image-sq" v-for="img in dataRow.images_url">
+							<v-img :src="getImageUrl(img)" height="100px" width="100px">
+								<v-button class="delete-image-btn"
+									><v-icon icon="mdi-delete" size="x-large"></v-icon>
+								</v-button>
+							</v-img>
+						</div>
+					</div>
+				</div>
+			</v-card>
+		</v-dialog>
+		<v-dialog v-model="showUpdatedMetadataDialog">
+			<NotificationSuccess
+				:result="result"
+				@close="
+					() => {
+						showUpdatedMetadataDialog = false;
+						result.message = '';
+						result.title = '';
+					}
+				"
+			/>
+		</v-dialog>
 	</v-container>
 </template>
 
 <style lang="scss">
 @import url('../assets/tables.css');
 
+.card-manage-prod {
+	display: flex;
+	flex-direction: column;
+	.header span{
+			color: #118c46;
+	}
+	.prod-color-row {
+		display: flex;
+		flex-direction: row;
+		padding: 0 2rem;
+		.color-title {
+			text-align: right;
+			padding-right: 1rem;
+			font-size: 1.5rem;
+			height: 100px;
+			width: 150px;
+			font-style: italic;
+			color: #118c46;
+			border-right: 10px solid #118c46;
+			margin-right: 4rem;
+		}
+	}
+}
+
+.management-section {
+	display: flex;
+	flex-direction: column;
+	.product-color-stock {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+		width: 400px;
+		height: 100px;
+		div {
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-start;
+			border: 1.5px solid #022c66;
+			.v-text-field {
+				margin: 0;
+				display: inherit;
+				justify-content: center;
+				align-items: center;
+				border-radius: 0;
+				flex: 0.4;
+				* {
+					border: unset;
+				}
+				input {
+					// border: 2px solid #022c66;
+					// border-radius: 5px;
+					width: 60px;
+					height: 60px;
+					font-size: 1.2rem;
+					color: #022c66;
+				}
+				.v-input__details {
+					display: none;
+				}
+			}
+			.arrows {
+				display: flex;
+				flex-direction: column;
+				border-radius: 0;
+
+				background-color: #022c66;
+				.v-btn.v-btn--density-default {
+					height: 29px;
+				}
+				.v-btn {
+					min-width: 10px;
+					border: unset;
+					background-color: #022c66;
+					color: #deefe7;
+					border-radius: 0;
+					font-size: 1rem;
+				}
+				.v-btn--size-default {
+					padding: 0 10px;
+				}
+				.v-btn:first-child {
+					// border-bottom: 1px solid #deefe7;
+					border-radius: 0;
+					margin-bottom: 2px;
+				}
+				.v-btn:hover {
+					background-color: #699be2;
+
+					color: #022c66;
+				}
+			}
+		}
+	}
+}
+
 .v-data-table-footer__items-per-page {
 	display: inline;
+}
+
+.card-manage-prod {
+	height: 80vh;
+	width: 70rem;
+	.header {
+		line-height: 1.1;
+		color: #022c66;
+		padding: 2rem;
+	}
 }
 
 @media (max-width: 1192px) {
@@ -226,5 +437,35 @@ const saveColorsID = (selectedColors: Color[]) => {
 			align-items: center;
 		}
 	}
+}
+
+.product-color-gallery {
+	display: flex;
+	flex-wrap: wrap; /* Ajusta el contenedor para envolver las imágenes */
+}
+
+.image-sq {
+	position: relative;
+}
+
+.delete-image-btn {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+	border: none;
+	border-radius: 5px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	height: 100px;
+	width: 100px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.image-sq:hover .delete-image-btn {
+	opacity: 1;
 }
 </style>

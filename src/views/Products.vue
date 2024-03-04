@@ -122,11 +122,12 @@ const handleEditProduct = async (prod: any) => {
 		showSuccessDialog.value = true;
 		await getProducts();
 	} catch (error: any) {
-		result.value.title = 'Error al actualizar categoría';
+		result.value.title = 'Error al actualizar producto';
 		result.value.message = error.response.data.message;
 		showErrorDialog.value = true;
 	}
 };
+
 
 onMounted(() => {
 	getData();
