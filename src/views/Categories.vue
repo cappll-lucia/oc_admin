@@ -16,7 +16,7 @@ const showNewDialog = ref(false);
 const showSuccessDialog = ref(false);
 const showErrorDialog = ref(false);
 
-const newCategory = ref<{ name: string, description: string | null }>({
+const newCategory = ref<{ name: string; description: string | null }>({
 	name: '',
 	description: null,
 });
@@ -49,7 +49,7 @@ const handleAddNewCategory = async () => {
 		}
 	} catch (error: any) {
 		result.value.title = 'Error al crear categoría';
-		result.value.message = error.message;
+		result.value.message = error.response.data.message;
 		showErrorDialog.value = true;
 	}
 };
@@ -62,7 +62,7 @@ const handleEditCategory = async (categ: Category) => {
 		await getCategories();
 	} catch (error: any) {
 		result.value.title = 'Error al actualizar categoría';
-		result.value.message = error.message;
+		result.value.message = error.response.data.message;
 		showErrorDialog.value = true;
 	}
 };
@@ -75,7 +75,7 @@ const handleDeleteCategory = async (categ: Category) => {
 		await getCategories();
 	} catch (error: any) {
 		result.value.title = 'Error al eliminar categoría';
-		result.value.message = error.message;
+		result.value.message = error.response.data.message;
 		showErrorDialog.value = true;
 	}
 };

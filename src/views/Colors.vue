@@ -57,7 +57,7 @@ const handleAddNewColor = async () => {
 		}
 	} catch (error: any) {
 		result.value.title = 'Error al crear color';
-		result.value.message = error.message;
+		result.value.message = error.response.data.message;
 		showErrorDialog.value = true;
 	}
 };
@@ -70,7 +70,7 @@ const handleEditColor = async (color: Color) => {
 		showSuccessDialog.value = true;
 	} catch (error: any) {
 		result.value.title = 'Error al actualizar color';
-		result.value.message = error.message;
+		result.value.message = error.response.data.message;
 		showErrorDialog.value = true;
 	}
 };
@@ -83,7 +83,7 @@ const handleDeleteColor = async (color: Color) => {
 		await getColors();
 	} catch (error: any) {
 		result.value.title = 'Error al eliminar color';
-		result.value.message = error.message;
+		result.value.message = error.response.data.message;
 		showErrorDialog.value = true;
 	}
 };
