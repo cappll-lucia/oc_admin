@@ -23,6 +23,7 @@ const initSort = [{ key: 'name', order: 'asc' }];
 
 const showEditDialog = ref(false);
 const showDeleteDialog = ref(false);
+const showDeleteImageDialog = ref(false);
 const showManageProductDialog = ref(false);
 const showUpdatedMetadataDialog = ref(false);
 
@@ -41,6 +42,12 @@ const editedProduct = ref<{
 }>({ name: 'fsdfs', description: null, price: 0, category: 0, brand: 0, colors: [] });
 
 const editedProductData = ref<any[]>([]);
+
+const imageToDelete = ref({
+	prod: 0,
+	color: 0,
+	imageName: '',
+});
 
 const clearEditedProduct = () => {
 	editedProduct.value = {
@@ -62,6 +69,9 @@ const edit = (prod: any) => {
 const manage = async (prod: any) => {
 	editedProduct.value = { ...prod };
 	editedProductData.value = await productsApi.getProducMetadata(prod.id);
+	editedProductData.value.forEach((dataRow) => {
+		dataRow.stockModified = false;
+	});
 	showManageProductDialog.value = true;
 };
 
@@ -121,13 +131,40 @@ const handleUpdateStock = async (dataRow: {
 	images_url: string[];
 	name: string;
 	background: string;
+	stockModified: boolean;
 }) => {
 	try {
 		await productsApi.updateStock(dataRow.product, dataRow.color, dataRow.stock);
+		dataRow.stockModified = false;
 		result.value.title = 'Stock Actualizado';
 		showUpdatedMetadataDialog.value = true;
 	} catch (error: any) {
 		result.value.title = 'Error al actualizar el stock del producto';
+		result.value.message = error.response.data.message;
+		showUpdatedMetadataDialog.value = true;
+	}
+};
+
+const deleteImage = (prod: number, color: number, imgName: string) => {
+	imageToDelete.value.prod = prod;
+	imageToDelete.value.color = color;
+	imageToDelete.value.imageName = imgName;
+	showDeleteImageDialog.value = true;
+};
+
+const confirmDeleteImage = async (prod: number, color: number, imgName: string) => {
+	try {
+		showDeleteImageDialog.value = false;
+		await productsApi.deleteImage(
+			imageToDelete.value.prod,
+			imageToDelete.value.color,
+			imageToDelete.value.imageName
+		);
+		editedProductData.value = await productsApi.getProducMetadata(prod);
+		result.value.title = 'Imagen Eliminada';
+		showUpdatedMetadataDialog.value = true;
+	} catch (error: any) {
+		result.value.title = 'Error al al eliminar la imagen';
 		result.value.message = error.response.data.message;
 		showUpdatedMetadataDialog.value = true;
 	}
@@ -275,24 +312,53 @@ const handleUpdateStock = async (dataRow: {
 								<v-text-field v-model="dataRow.stock" variant="outlined"></v-text-field>
 								<div class="arrows">
 									<v-btn variant="outlined">
-										<v-icon icon="mdi-chevron-up" @click="() => dataRow.stock++"></v-icon
+										<v-icon
+											icon="mdi-chevron-up"
+											@click="
+												() => {
+													dataRow.stock++;
+													dataRow.stockModified = true;
+												}
+											"
+										></v-icon
 									></v-btn>
-									<v-btn variant="outlined">
+									<v-btn variant="outlined" :disabled="dataRow.stock === 0">
 										<v-icon
 											icon="mdi-chevron-down"
-											@click="() => dataRow.stock--"
+											@click="
+												() => {
+													if (dataRow.stock > 0) {
+														dataRow.stock--;
+														dataRow.stockModified = true;
+													}
+												}
+											"
 										></v-icon
 									></v-btn>
 								</div>
 							</div>
-							<v-btn type="submit">ACTUALIZAR STOCK</v-btn>
+							<v-btn
+								type="submit"
+								:disabled="!dataRow.stockModified"
+								size="x-large"
+								class="save-stock-btn"
+								elevation="0"
+								><v-icon icon="mdi-content-save"></v-icon>
+							</v-btn>
 						</v-form>
 					</div>
 					<div class="product-color-gallery">
+						<div class="image-sq-add">
+							<v-button class="add-image-btn pointer" @click="deleteImage('jkl')"
+								><v-icon icon="mdi-plus" size="large"></v-icon>
+							</v-button>
+						</div>
 						<div class="image-sq" v-for="img in dataRow.images_url">
 							<v-img :src="getImageUrl(img)" height="100px" width="100px">
-								<v-button class="delete-image-btn"
-									><v-icon icon="mdi-delete" size="x-large"></v-icon>
+								<v-button
+									class="delete-image-btn pointer"
+									@click="deleteImage(dataRow.product, dataRow.color, img)"
+									><v-icon icon="mdi-delete" size="large"></v-icon>
 								</v-button>
 							</v-img>
 						</div>
@@ -312,6 +378,14 @@ const handleUpdateStock = async (dataRow: {
 				"
 			/>
 		</v-dialog>
+		<v-dialog v-model="showDeleteImageDialog" max-width="290">
+			<NotificationConfirmation
+				:title="'Eliminar Imagen'"
+				:question="`¿Está seguro de eliminar la imagen?`"
+				@cancel="() => (showDeleteImageDialog = false)"
+				@confirm="confirmDeleteImage"
+			/>
+		</v-dialog>
 	</v-container>
 </template>
 
@@ -321,25 +395,47 @@ const handleUpdateStock = async (dataRow: {
 .card-manage-prod {
 	display: flex;
 	flex-direction: column;
-	.header span{
-			color: #118c46;
+	padding: 0 1rem;
+	.header span {
+		color: #118c46;
 	}
 	.prod-color-row {
 		display: flex;
 		flex-direction: row;
-		padding: 0 2rem;
+		margin-bottom: 1rem;
+		background-color: rgb(241, 241, 241);
+		min-height: 110px;
 		.color-title {
 			text-align: right;
-			padding-right: 1rem;
+			padding: 1rem 1rem 0 0;
 			font-size: 1.5rem;
-			height: 100px;
-			width: 150px;
+			width: 200px;
+			height: 100%;
 			font-style: italic;
 			color: #118c46;
 			border-right: 10px solid #118c46;
-			margin-right: 4rem;
+			margin: 0 4rem 4rem 0;
 		}
 	}
+}
+
+.save-stock-btn {
+	min-width: 20px;
+	// min-height: 54px;
+	border-radius: 10px;
+	margin-left: 1.5rem;
+	color: #deefe7;
+	display: flex;
+	justify-content: center;
+	.v-btn__content {
+		padding: 0;
+		width: 10px;
+	}
+	.v-btn__append {
+		margin-left: 0;
+		padding: 0;
+	}
+	background-color: #022c66;
 }
 
 .management-section {
@@ -350,7 +446,7 @@ const handleUpdateStock = async (dataRow: {
 		flex-direction: row;
 		justify-content: flex-start;
 		align-items: center;
-		width: 400px;
+		width: 350px;
 		height: 100px;
 		div {
 			display: flex;
@@ -368,8 +464,6 @@ const handleUpdateStock = async (dataRow: {
 					border: unset;
 				}
 				input {
-					// border: 2px solid #022c66;
-					// border-radius: 5px;
 					width: 60px;
 					height: 60px;
 					font-size: 1.2rem;
@@ -394,13 +488,12 @@ const handleUpdateStock = async (dataRow: {
 					background-color: #022c66;
 					color: #deefe7;
 					border-radius: 0;
-					font-size: 1rem;
+					font-size: 1.2rem;
 				}
 				.v-btn--size-default {
 					padding: 0 10px;
 				}
 				.v-btn:first-child {
-					// border-bottom: 1px solid #deefe7;
 					border-radius: 0;
 					margin-bottom: 2px;
 				}
@@ -420,7 +513,7 @@ const handleUpdateStock = async (dataRow: {
 
 .card-manage-prod {
 	height: 80vh;
-	width: 70rem;
+	width: 80rem;
 	.header {
 		line-height: 1.1;
 		color: #022c66;
@@ -441,11 +534,26 @@ const handleUpdateStock = async (dataRow: {
 
 .product-color-gallery {
 	display: flex;
-	flex-wrap: wrap; /* Ajusta el contenedor para envolver las imágenes */
+	flex-wrap: wrap;
+	width: 40rem;
+	min-height: 100px;
 }
 
-.image-sq {
+.image-sq,
+.image-sq-add {
 	position: relative;
+	height: 100px;
+	width: 100px;
+	border: 0.5px solid rgb(197, 197, 197);
+	border-radius: 5px;
+	margin: 0.5rem 1rem 0.5rem 0;
+	background-color: white;
+}
+
+.image-sq-add {
+	background-color: rgb(241, 241, 241);
+	border-color: #022c66;
+	overflow: hidden;
 }
 
 .delete-image-btn {
@@ -465,7 +573,28 @@ const handleUpdateStock = async (dataRow: {
 	align-items: center;
 }
 
+.add-image-btn {
+	position: relative;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	color: #022c66;
+	border-radius: 5px;
+	transition: opacity 0.3s ease;
+	height: 100px;
+	width: 100px;
+	font-size: 1.5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .image-sq:hover .delete-image-btn {
 	opacity: 1;
+}
+
+.image-sq-add:hover .add-image-btn {
+	font-size: 1.8rem;
+	background-color: #699be271;
 }
 </style>

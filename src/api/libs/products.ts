@@ -75,6 +75,16 @@ const remove = async (_id: number) => {
 	}
 };
 
+const deleteImage = async (_prodId: number, _colorId: number, _imageName: string) => {
+	try {
+		console.log(_prodId);
+		await http.put(`/products/delete-image/${_prodId}/${_colorId}/${_imageName}`);
+	} catch (error: any) {
+		console.log(error);
+		throw error.response.data;
+	}
+};
+
 export const productsApi = {
 	getAll: () => getAll(),
 	getProducMetadata: (_prodId: number) => getProducMetadata(_prodId),
@@ -100,4 +110,6 @@ export const productsApi = {
 	updateStock: (_prodId: number, _colorId: number, _stock: number) =>
 		updateStock(_prodId, _colorId, _stock),
 	remove: (_id: number) => remove(_id),
+	deleteImage: (_prodId: number, _colorId: number, _imageName: string) =>
+		deleteImage(_prodId, _colorId, _imageName),
 };
