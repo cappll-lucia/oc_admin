@@ -8,7 +8,7 @@ import NotificationSuccess from './Notification.Success.vue';
 import { validator } from '@/utils/validator.js';
 import { productsApi } from '@/api/libs/products.js';
 const props = defineProps(['products', 'categories', 'brands', 'colors']);
-const emits = defineEmits(['handleDelete', 'handleEdit']);
+const emits = defineEmits(['handleDelete', 'handleEdit', 'getProducts']);
 
 const headers: DataTableHeader[] = [
 	{ title: 'Código', key: 'id', align: 'start' },
@@ -133,15 +133,33 @@ const addNewProductColor = () => {
 	showAddProductColorInput.value = true;
 };
 
-const confirmAddProductColor = () => {
+const confirmAddProductColor = async () => {
 	if (addedColors.value.length > 0) {
 		editedProduct.value.colors.push(...addedColors.value);
 	}
-	emits('handleEdit', editedProduct.value);
 	showAddProductColorInput.value = false;
+	// const emitPromise = new Promise((resolve) => {
+	// 	emits('handleEdit', editedProduct.value);
+	// });
+	// await emitPromise;
+	const prodToEdit = {
+		name: editedProduct.value.name,
+		description: editedProduct.value.description,
+		price: editedProduct.value.price,
+		category: editedProduct.value.category,
+		brand: editedProduct.value.brand,
+		colors: (editedProduct.value.colors as Color[]).map((col) => col.id),
+	};
+	await productsApi.update(prodToEdit, (editedProduct.value as Product).id);
+	result.value.message = 'Color registrado para el producto.';
+	showUpdatedMetadataDialog.value = true;
+	editedProductData.value = await productsApi.getProducMetadata(
+		(editedProduct.value as Product).id
+	);
 	colorsToAdd.value = props.colors;
 	addedColors.value = [];
 };
+
 const saveColorsID = (selectedColors: Color[]) => {
 	(editedProduct as any).colors = selectedColors.map((col) => col.id);
 };
@@ -244,6 +262,11 @@ const confirmDeleteDataRow = async () => {
 		showUpdatedMetadataDialog.value = true;
 	}
 };
+
+const closeManagerDialog = async () => {
+	showManageProductDialog.value = false;
+	emits('getProducts');
+};
 </script>
 
 <template>
@@ -261,7 +284,9 @@ const confirmDeleteDataRow = async () => {
 				<td>{{ (item as Product).brand.name }}</td>
 			</template>
 			<template v-slot:item.colors="{ item }">
-				<td>{{ (item as Product).colors.map((c) => c.name).join(', ') }}</td>
+				<td class="color-cell">
+					{{ (item as Product).colors.map((c) => c.name).join(', ') }}
+				</td>
 			</template>
 			<template v-slot:item.actions="{ item }">
 				<v-icon
@@ -369,7 +394,7 @@ const confirmDeleteDataRow = async () => {
 							elevation="0"
 							density="compact"
 							icon="mdi-close-thick"
-							@click="showManageProductDialog = false"
+							@click="closeManagerDialog()"
 						></v-btn>
 						<v-btn
 							class="add-color"
@@ -583,5 +608,9 @@ element.style {
 .form-card .form-input-panel .text-field-group .v-field__input,
 .card .form-input-panel .text-field-group .desc-input .v-field__input {
 	padding-top: 20px;
+}
+
+.color-cell {
+	max-width: 150px;
 }
 </style>

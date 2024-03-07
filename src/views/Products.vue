@@ -161,6 +161,7 @@ onMounted(() => {
 						:colors="colors"
 						@handleEdit="handleEditProduct"
 						@handleDelete="handleDeleteProduct"
+						@getProducts="getProducts"
 					/>
 				</v-col>
 				<Loader v-else :message="'Cargando Productos...'" />
