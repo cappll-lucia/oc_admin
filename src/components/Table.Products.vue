@@ -312,7 +312,7 @@ const closeManagerDialog = async () => {
 		<v-dialog v-model="showDeleteDialog" max-width="290">
 			<NotificationConfirmation
 				:title="'Eliminar Producto'"
-				:question="`¿Está seguro de eliminar el producto ${editedProduct.name.toLocaleUpperCase()}?`"
+				:question="`¿Está seguro de eliminar el producto ${editedProduct.name.toLocaleUpperCase()}? Las imágenes del producto también serán eliminadas`"
 				@cancel="() => (showDeleteDialog = false)"
 				@confirm="confirmDelete"
 			/>

@@ -38,9 +38,9 @@
 		flex-direction: row;
 		margin-bottom: 2rem;
 		background-color: #cccccc57;
-
+		border-radius: 5px;
 		.color-title {
-			padding: 1rem 1rem 0 0;
+			padding: 1rem;
 			width: 200px;
 			display: flex;
 			flex-direction: column;
@@ -53,6 +53,8 @@
 				font-size: 1.5rem;
 				font-style: italic;
 				padding-bottom: 0.5rem;
+				width: min-content;
+				text-align: right;
 			}
 			.v-btn {
 				color: rgb(88, 88, 88);
