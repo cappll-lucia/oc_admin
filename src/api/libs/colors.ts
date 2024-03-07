@@ -32,7 +32,7 @@ const remove = async (_id: number) => {
 	try {
 		await http.delete(`/colors/${_id}`);
 	} catch (error: any) {
-		throw error.response.data;
+		throw error;
 	}
 };
 

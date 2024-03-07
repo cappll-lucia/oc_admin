@@ -1,6 +1,7 @@
 import { mdiCarLightAlert } from '@mdi/js';
 import type { Product } from '../entities.js';
 import { http } from '../http.js';
+import { http_files } from '../http.files.js';
 
 const getAll = async () => {
 	try {
@@ -30,7 +31,6 @@ const add = async (_product: {
 	try {
 		await http.post('/products', _product);
 	} catch (error: any) {
-		console.log(error);
 		throw error.response.data;
 	}
 };
@@ -65,10 +65,24 @@ const updateStock = async (_prodId: number, _colorId: number, stock: number) => 
 	}
 };
 
+const uploadImage = async (_prodId: number, _colorId: number, _image: FormData) => {
+	try {
+		await http_files.put(`/products/upload-image/${_prodId}/${_colorId}`, _image);
+	} catch (error) {
+		throw error;
+	}
+};
+
 const remove = async (_id: number) => {
 	try {
 		await http.delete(`/products/${_id}`);
-		console.log('delll');
+	} catch (error: any) {
+		throw error.response.data;
+	}
+};
+const removeDataRow = async (_prodId: number, _colorId: number) => {
+	try {
+		await http.delete(`/products/${_prodId}/${_colorId}`);
 	} catch (error: any) {
 		console.log(error);
 		throw error.response.data;
@@ -77,10 +91,8 @@ const remove = async (_id: number) => {
 
 const deleteImage = async (_prodId: number, _colorId: number, _imageName: string) => {
 	try {
-		console.log(_prodId);
 		await http.put(`/products/delete-image/${_prodId}/${_colorId}/${_imageName}`);
 	} catch (error: any) {
-		console.log(error);
 		throw error.response.data;
 	}
 };
@@ -109,7 +121,10 @@ export const productsApi = {
 	) => update(_product, _id),
 	updateStock: (_prodId: number, _colorId: number, _stock: number) =>
 		updateStock(_prodId, _colorId, _stock),
+	uploadImage: (_prodId: number, _colorId: number, _image: FormData) =>
+		uploadImage(_prodId, _colorId, _image),
 	remove: (_id: number) => remove(_id),
+	removeDataRow: (_prodId: number, _colorId: number) => removeDataRow(_prodId, _colorId),
 	deleteImage: (_prodId: number, _colorId: number, _imageName: string) =>
 		deleteImage(_prodId, _colorId, _imageName),
 };

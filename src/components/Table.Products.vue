@@ -26,6 +26,9 @@ const showDeleteDialog = ref(false);
 const showDeleteImageDialog = ref(false);
 const showManageProductDialog = ref(false);
 const showUpdatedMetadataDialog = ref(false);
+const showUploadImageInput = ref(false);
+const showAddProductColorInput = ref(false);
+const showDeleteDataRowDialog = ref(false);
 
 const result = ref({
 	message: '',
@@ -43,12 +46,26 @@ const editedProduct = ref<{
 
 const editedProductData = ref<any[]>([]);
 
+const colorsToAdd = ref([...props.colors]);
+const addedColors = ref([]);
+
+const dataRowToDelete = ref<any>(undefined);
+
 const imageToDelete = ref({
 	prod: 0,
 	color: 0,
 	imageName: '',
 });
-
+const newImage = ref({
+	prod: 0,
+	color: 0,
+	imageFile: undefined,
+});
+const clearNewImage = () => {
+	newImage.value.prod = 0;
+	newImage.value.color = 0;
+	newImage.value.imageFile = undefined;
+};
 const clearEditedProduct = () => {
 	editedProduct.value = {
 		name: '',
@@ -108,21 +125,28 @@ const confirmEdition = () => {
 	}
 };
 
+const addNewProductColor = () => {
+	const registeredColorsId = editedProductData.value.map((rowData) => rowData.color);
+	colorsToAdd.value = props.colors.filter(
+		(color: Color) => !registeredColorsId.includes(color.id)
+	);
+	showAddProductColorInput.value = true;
+};
+
+const confirmAddProductColor = () => {
+	if (addedColors.value.length > 0) {
+		editedProduct.value.colors.push(...addedColors.value);
+	}
+	emits('handleEdit', editedProduct.value);
+	showAddProductColorInput.value = false;
+	colorsToAdd.value = props.colors;
+	addedColors.value = [];
+};
 const saveColorsID = (selectedColors: Color[]) => {
 	(editedProduct as any).colors = selectedColors.map((col) => col.id);
 };
 const getImageUrl = (imageName: string) =>
 	`${import.meta.env.VITE_API_URL}/products/image/${imageName}`;
-
-const updateStock = (dataRow: {
-	product: number;
-	color: number;
-	images_url: string[];
-	name: string;
-	background: string;
-}) => {
-	console.log(editedProductData.value);
-};
 
 const handleUpdateStock = async (dataRow: {
 	product: number;
@@ -160,9 +184,60 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 			imageToDelete.value.color,
 			imageToDelete.value.imageName
 		);
-		editedProductData.value = await productsApi.getProducMetadata(prod);
 		result.value.title = 'Imagen Eliminada';
 		showUpdatedMetadataDialog.value = true;
+		editedProductData.value = await productsApi.getProducMetadata(
+			imageToDelete.value.prod
+		);
+	} catch (error: any) {
+		result.value.title = 'Error al al eliminar la imagen';
+		result.value.message = error.response.data.message;
+		showUpdatedMetadataDialog.value = true;
+	}
+};
+
+const uploadImage = (prod: number, color: number) => {
+	newImage.value.prod = prod;
+	newImage.value.color = color;
+	showUploadImageInput.value = true;
+};
+
+const confirmUploadImage = async () => {
+	try {
+		if (newImage.value.imageFile) {
+			const formData = new FormData();
+			formData.append('image', newImage.value.imageFile[0]);
+			showUploadImageInput.value = false;
+			await productsApi.uploadImage(newImage.value.prod, newImage.value.color, formData);
+			editedProductData.value = await productsApi.getProducMetadata(newImage.value.prod);
+			result.value.title = 'Imagen Guardada';
+			showUpdatedMetadataDialog.value = true;
+			clearNewImage();
+		}
+	} catch (error: any) {
+		result.value.title = 'Error al al guardar la imagen';
+		result.value.message = error.response.data.message;
+		showUpdatedMetadataDialog.value = true;
+	}
+};
+
+const deleteProductColorRow = async (dataRow: any) => {
+	dataRowToDelete.value = dataRow;
+	showDeleteDataRowDialog.value = true;
+};
+
+const confirmDeleteDataRow = async () => {
+	try {
+		showDeleteDataRowDialog.value = false;
+		await productsApi.removeDataRow(
+			dataRowToDelete.value.product,
+			dataRowToDelete.value.color
+		);
+		result.value.title = 'Color eliminado para el producto';
+		showUpdatedMetadataDialog.value = true;
+		editedProductData.value = await productsApi.getProducMetadata(
+			dataRowToDelete.value.product
+		);
 	} catch (error: any) {
 		result.value.title = 'Error al al eliminar la imagen';
 		result.value.message = error.response.data.message;
@@ -231,13 +306,14 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 							:rules="[formRules.required(), formRules.min(3)]"
 						>
 						</v-text-field>
-						<v-text-field
+						<v-textarea
 							variant="outlined"
 							v-model="editedProduct.description"
 							label="Descripción"
 							:rules="[formRules.max(225)]"
+							class="desc-input"
 						>
-						</v-text-field>
+						</v-textarea>
 						<div class="price-row">
 							<span>$</span>
 							<v-text-field
@@ -270,19 +346,6 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 							:rules="[formRules.required()]"
 						>
 						</v-select>
-						<v-combobox
-							v-model="editedProduct.colors"
-							:items="props.colors"
-							label="Colores"
-							item-title="name"
-							item-value="id"
-							variant="outlined"
-							multiple
-							:rules="[formRules.required()]"
-							class="color-combo"
-							@update:model-value="saveColorsID"
-						>
-						</v-combobox>
 					</v-card-text>
 					<div class="form-action-panel">
 						<v-btn class="cancel-btn" variant="outlined" @click="showEditDialog = false"
@@ -296,12 +359,37 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 		<v-dialog v-model="showManageProductDialog">
 			<v-card class="card-manage-prod">
 				<div class="header">
-					<span>Gestionar Producto</span>
-					<h1>{{ editedProduct.name }}</h1>
+					<div class="header-txt">
+						<span>Gestionar Producto</span>
+						<h1>{{ editedProduct.name }}</h1>
+					</div>
+					<div class="header-btn">
+						<v-btn
+							class="close-btn"
+							elevation="0"
+							density="compact"
+							icon="mdi-close-thick"
+							@click="showManageProductDialog = false"
+						></v-btn>
+						<v-btn
+							class="add-color"
+							variant="outlined"
+							append-icon="mdi-plus"
+							@click="addNewProductColor"
+							>AGREGAR COLOR</v-btn
+						>
+					</div>
 				</div>
 				<div v-for="dataRow in editedProductData" class="prod-color-row">
 					<div class="color-title">
-						<span>{{ dataRow.name }}</span>
+						<span class="title">{{ dataRow.name }}</span>
+						<v-btn
+							v-if="editedProductData.length > 1"
+							density="compact"
+							elevation="0"
+							icon="mdi-delete"
+							@click="deleteProductColorRow(dataRow)"
+						></v-btn>
 					</div>
 					<div class="management-section">
 						<v-form
@@ -349,7 +437,9 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 					</div>
 					<div class="product-color-gallery">
 						<div class="image-sq-add">
-							<v-button class="add-image-btn pointer" @click="deleteImage('jkl')"
+							<v-button
+								class="add-image-btn pointer"
+								@click="uploadImage(dataRow.product, dataRow.color)"
 								><v-icon icon="mdi-plus" size="large"></v-icon>
 							</v-button>
 						</div>
@@ -364,6 +454,63 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 						</div>
 					</div>
 				</div>
+			</v-card>
+		</v-dialog>
+		<v-dialog v-model="showUploadImageInput">
+			<v-card class="upload-image-card">
+				<v-form @submit.prevent="confirmUploadImage">
+					<v-file-input
+						v-model="newImage.imageFile"
+						accept="image/*"
+						variant="outlined"
+						label="Subir Nueva Imagen"
+						name="logo"
+						:rules="[formRules.required()]"
+					></v-file-input>
+					<div class="form-action-panel mt-6">
+						<v-btn
+							class="cancel-btn"
+							variant="outlined"
+							@click="showUploadImageInput = false"
+							>CANCELAR</v-btn
+						>
+						<v-btn class="submit-btn" variant="outlined" type="submit">GUARDAR</v-btn>
+					</div>
+				</v-form>
+			</v-card>
+		</v-dialog>
+		<v-dialog v-model="showAddProductColorInput">
+			<v-card class="upload-image-card">
+				<v-form @submit.prevent="confirmAddProductColor">
+					<v-combobox
+						v-model="addedColors"
+						:items="colorsToAdd"
+						label="Colores"
+						item-title="name"
+						item-value="id"
+						variant="outlined"
+						multiple
+						:rules="[formRules.required()]"
+						class="color-combo"
+						@update:model-value="saveColorsID"
+					>
+					</v-combobox>
+					<div class="form-action-panel mt-6">
+						<v-btn
+							class="cancel-btn"
+							variant="outlined"
+							@click="
+								() => {
+									showAddProductColorInput = false;
+									addedColors = [];
+									colorsToAdd = props.colors;
+								}
+							"
+							>CANCELAR</v-btn
+						>
+						<v-btn class="submit-btn" variant="outlined" type="submit">GUARDAR</v-btn>
+					</div>
+				</v-form>
 			</v-card>
 		</v-dialog>
 		<v-dialog v-model="showUpdatedMetadataDialog">
@@ -386,139 +533,23 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 				@confirm="confirmDeleteImage"
 			/>
 		</v-dialog>
+		<v-dialog v-model="showDeleteDataRowDialog" max-width="290">
+			<NotificationConfirmation
+				:title="'Eliminar Imagen'"
+				:question="`¿Está seguro de eliminar color ${dataRowToDelete.name} para el producto? Todas las imagenes producto-color serán también eliminadas`"
+				@cancel="() => (showDeleteImageDialog = false)"
+				@confirm="confirmDeleteDataRow"
+			/>
+		</v-dialog>
 	</v-container>
 </template>
 
 <style lang="scss">
 @import url('../assets/tables.css');
-
-.card-manage-prod {
-	display: flex;
-	flex-direction: column;
-	padding: 0 1rem;
-	.header span {
-		color: #118c46;
-	}
-	.prod-color-row {
-		display: flex;
-		flex-direction: row;
-		margin-bottom: 1rem;
-		background-color: rgb(241, 241, 241);
-		min-height: 110px;
-		.color-title {
-			text-align: right;
-			padding: 1rem 1rem 0 0;
-			font-size: 1.5rem;
-			width: 200px;
-			height: 100%;
-			font-style: italic;
-			color: #118c46;
-			border-right: 10px solid #118c46;
-			margin: 0 4rem 4rem 0;
-		}
-	}
-}
-
-.save-stock-btn {
-	min-width: 20px;
-	// min-height: 54px;
-	border-radius: 10px;
-	margin-left: 1.5rem;
-	color: #deefe7;
-	display: flex;
-	justify-content: center;
-	.v-btn__content {
-		padding: 0;
-		width: 10px;
-	}
-	.v-btn__append {
-		margin-left: 0;
-		padding: 0;
-	}
-	background-color: #022c66;
-}
-
-.management-section {
-	display: flex;
-	flex-direction: column;
-	.product-color-stock {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
-		align-items: center;
-		width: 350px;
-		height: 100px;
-		div {
-			display: flex;
-			flex-direction: row;
-			justify-content: flex-start;
-			border: 1.5px solid #022c66;
-			.v-text-field {
-				margin: 0;
-				display: inherit;
-				justify-content: center;
-				align-items: center;
-				border-radius: 0;
-				flex: 0.4;
-				* {
-					border: unset;
-				}
-				input {
-					width: 60px;
-					height: 60px;
-					font-size: 1.2rem;
-					color: #022c66;
-				}
-				.v-input__details {
-					display: none;
-				}
-			}
-			.arrows {
-				display: flex;
-				flex-direction: column;
-				border-radius: 0;
-
-				background-color: #022c66;
-				.v-btn.v-btn--density-default {
-					height: 29px;
-				}
-				.v-btn {
-					min-width: 10px;
-					border: unset;
-					background-color: #022c66;
-					color: #deefe7;
-					border-radius: 0;
-					font-size: 1.2rem;
-				}
-				.v-btn--size-default {
-					padding: 0 10px;
-				}
-				.v-btn:first-child {
-					border-radius: 0;
-					margin-bottom: 2px;
-				}
-				.v-btn:hover {
-					background-color: #699be2;
-
-					color: #022c66;
-				}
-			}
-		}
-	}
-}
+@import url('../assets/manageProdPanel.scss');
 
 .v-data-table-footer__items-per-page {
 	display: inline;
-}
-
-.card-manage-prod {
-	height: 80vh;
-	width: 80rem;
-	.header {
-		line-height: 1.1;
-		color: #022c66;
-		padding: 2rem;
-	}
 }
 
 @media (max-width: 1192px) {
@@ -532,69 +563,25 @@ const confirmDeleteImage = async (prod: number, color: number, imgName: string) 
 	}
 }
 
-.product-color-gallery {
-	display: flex;
-	flex-wrap: wrap;
-	width: 40rem;
-	min-height: 100px;
+.upload-image-card {
+	width: 25rem;
+	padding: 3rem;
 }
 
-.image-sq,
-.image-sq-add {
-	position: relative;
-	height: 100px;
-	width: 100px;
-	border: 0.5px solid rgb(197, 197, 197);
-	border-radius: 5px;
-	margin: 0.5rem 1rem 0.5rem 0;
-	background-color: white;
+.desc-input .v-input__control {
+	.v_field {
+		.v-field__field {
+			textarea {
+				padding-top: 20px;
+			}
+		}
+	}
 }
-
-.image-sq-add {
-	background-color: rgb(241, 241, 241);
-	border-color: #022c66;
-	overflow: hidden;
+element.style {
+	padding-top: 20px;
 }
-
-.delete-image-btn {
-	position: absolute;
-	bottom: 0px;
-	left: 0px;
-	background-color: rgba(0, 0, 0, 0.5);
-	color: white;
-	border: none;
-	border-radius: 5px;
-	opacity: 0;
-	transition: opacity 0.3s ease;
-	height: 100px;
-	width: 100px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.add-image-btn {
-	position: relative;
-	position: absolute;
-	bottom: 0px;
-	left: 0px;
-	color: #022c66;
-	border-radius: 5px;
-	transition: opacity 0.3s ease;
-	height: 100px;
-	width: 100px;
-	font-size: 1.5rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.image-sq:hover .delete-image-btn {
-	opacity: 1;
-}
-
-.image-sq-add:hover .add-image-btn {
-	font-size: 1.8rem;
-	background-color: #699be271;
+.form-card .form-input-panel .text-field-group .v-field__input,
+.card .form-input-panel .text-field-group .desc-input .v-field__input {
+	padding-top: 20px;
 }
 </style>

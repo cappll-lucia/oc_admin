@@ -128,7 +128,6 @@ const handleEditProduct = async (prod: any) => {
 	}
 };
 
-
 onMounted(() => {
 	getData();
 });
@@ -181,13 +180,14 @@ onMounted(() => {
 							:rules="[formRules.required(), formRules.min(3)]"
 						>
 						</v-text-field>
-						<v-text-field
+						<v-textarea
 							variant="outlined"
 							v-model="newProduct.description"
 							label="Descripción"
 							:rules="[formRules.max(225)]"
+							class="desc-input"
 						>
-						</v-text-field>
+						</v-textarea>
 						<div class="price-row">
 							<span>$</span>
 							<v-text-field
@@ -291,5 +291,9 @@ onMounted(() => {
 	margin-bottom: 5rem;
 	padding: 1rem 0;
 	top: 6rem;
+}
+
+.card .form-input-panel .text-field-group .desc-input .v-field__input {
+	padding-top: 20px;
 }
 </style>

@@ -8,6 +8,7 @@
 		"src/stores/*.ts",
 		"src/utils/*.ts",
 		"src/**/*.vue",
+		"src/**/**.vue",
 		"src/vite-env.d.ts"
 	],
 	"files": ["src/stores/UsersStore.ts", "src/utils/validator.ts"],

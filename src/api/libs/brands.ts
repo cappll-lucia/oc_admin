@@ -22,7 +22,6 @@ const update = async (_brand: FormData, id: number) => {
 	try {
 		await http_files.put(`/brands/${id}`, _brand);
 	} catch (error) {
-		console.log(error)
 		throw error;
 	}
 };
