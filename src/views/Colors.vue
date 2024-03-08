@@ -132,7 +132,7 @@ onMounted(() => {
 		</v-container>
 		<v-dialog class="new-dialog color-new-dialog" v-model="showNewDialog">
 			<v-card class="card">
-				<div class="form-card-header">
+				<div class="form-card-header form-card-header-colors">
 					<span>Crear Color</span>
 				</div>
 				<v-form class="form-input-panel" @submit.prevent="handleAddNewColor">
@@ -203,6 +203,9 @@ onMounted(() => {
 				flex-direction: column;
 				align-items: center;
 			}
+		}
+		.form-card-header-colors{
+			margin-top: 3rem;
 		}
 	}
 }

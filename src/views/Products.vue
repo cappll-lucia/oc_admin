@@ -169,7 +169,7 @@ onMounted(() => {
 		</v-container>
 		<v-dialog class="new-dialog" v-model="showNewDialog">
 			<v-card class="card">
-				<div class="form-card-header">
+				<div class="form-card-header form-card-header-prod">
 					<span>Crear Producto</span>
 				</div>
 				<v-form class="form-input-panel" @submit.prevent="handleAddNewProduct">
@@ -287,11 +287,11 @@ onMounted(() => {
 	}
 }
 
-.form-card-header {
+.form-card-header-prod {
 	position: relative;
-	margin-bottom: 5rem;
+	margin-bottom: 10rem;
 	padding: 1rem 0;
-	top: 6rem;
+	top: 11rem;
 }
 
 .card .form-input-panel .text-field-group .desc-input .v-field__input {

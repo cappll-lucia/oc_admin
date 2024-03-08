@@ -119,7 +119,7 @@ onMounted(() => {
 		</v-container>
 		<v-dialog class="new-dialog" v-model="showNewDialog">
 			<v-card class="card">
-				<div class="for-card-header">
+				<div class="form-card-header">
 					<span>Crear Marca</span>
 				</div>
 				<v-form class="form-input-panel" @submit.prevent="handleAddNewBrand">
